@@ -31,13 +31,13 @@ def get_resetTime():
     return run_query(new_query)
 
 def notify(name):
-    if notify_list[name]:
-        print(name + "will restock in 3 minutes!")
-        playsound("restock.wav")
-        plyer.notification.notify(title="Restock Notification",
-            message=name + " will restock in 3 minutes!",
-            timeout=10
-        )
+    print(name + "will restock in 3 minutes!")
+    playsound("sounds/" + name + ".wav")
+    playsound("sounds/" + "restock.wav")
+    plyer.notification.notify(title="Restock Notification",
+        message=name + " will restock in 3 minutes!",
+        timeout=10
+    )
     reset = threading.Timer(300,startTimer,args=(name,))
     reset.start()
 
@@ -54,13 +54,11 @@ def startTimer(name):
     remainTime = resetTime - currentTime
     print(remainTime)
     print(name)
-
     if remainTime < 180:
         if remainTime < 0:
             createTimer(300,name)
         else:
-            if notify_list[name]:
-                print(name + " will restock in " + str(remainTime) + "seconds!")
+            print(name + " will restock in " + str(remainTime) + "seconds!")
             createTimer(300,name)
     else:
         reset = threading.Timer(remainTime - 180,notify,args=(name,))
@@ -82,8 +80,9 @@ def main():
         traderNames.append(t['name'])
     
     for t in traderNames:
-        print(t + ": timer started")
-        startTimer(t)
+        if notify_list[t]:
+            print(t + ": timer started")
+            startTimer(t)
 
     
 
